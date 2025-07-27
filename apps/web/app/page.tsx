@@ -13,3 +13,5 @@ export default async function Home() {
     </div>
   );
 }
+
+// export const dynamic = 'force-dynamic'; // This is to ensure the page is not cached
