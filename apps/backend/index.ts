@@ -1,6 +1,8 @@
 import express from "express";
 import { prismaClient } from "db/client";
 
+const port = 8080;
+
 const app = express();
 
 app.use(express.json());
@@ -37,7 +39,7 @@ app.post("/user", (req, res) => {
     });
 })
 
-app.listen(8080, () => {
-  console.log("Server is running on http://localhost:8080");
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
 
