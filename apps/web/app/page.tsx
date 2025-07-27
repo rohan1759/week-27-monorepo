@@ -14,4 +14,4 @@ export default async function Home() {
   );
 }
 
-// export const dynamic = 'force-dynamic'; // This is to ensure the page is not cached
+export const dynamic = 'force-dynamic'; // This is to ensure the page is not cached
