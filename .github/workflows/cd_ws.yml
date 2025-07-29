@@ -23,3 +23,20 @@ jobs:
           file: docker/Dockerfile.ws
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-websocket:${{ github.sha}}
+
+      - name: Save SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+
+      # DEPLOYMENT to VM
+      - name: Deploy to VM
+        run: |
+          ssh -i ~/ssh_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-websocket:${{ github.sha }}
+          docker stop todo-websocket || true
+          docker rm todo-websocket || true
+          docker run -d --name todo-websocket -p 8081:8081 \
+            -e DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres \
+            ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-websocket:${{ github.sha }}
+          EOF

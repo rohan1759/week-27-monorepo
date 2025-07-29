@@ -24,4 +24,19 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-frontend:${{ github.sha }}
 
-      
+      - name: Save SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+
+      # DEPLOYMENT to VM
+      - name: Deploy to VM
+        run: |
+          ssh -i ~/ssh_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-frontend:${{ github.sha }}
+          docker stop todo-frontend || true
+          docker rm todo-frontend || true
+          docker run -d --name todo-frontend -p 3000:3000 \
+            -e DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres \
+            ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-frontend:${{ github.sha }}
+          EOF
