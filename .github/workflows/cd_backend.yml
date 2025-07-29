@@ -32,7 +32,7 @@ jobs:
       # DEPLOYMENT to VM
       - name: Deploy to VM
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+          ssh -i ~/ssh_key -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/todoapp-backend:${{ github.sha }}
           docker stop backend || true
           docker rm backend || true
